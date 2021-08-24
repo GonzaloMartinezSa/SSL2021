@@ -1,88 +1,56 @@
 #include <stdio.h>
 #include "scanner.h"
+#include <ctype.h>
 
-enum{FDT,SEP,CAD};
-
-int tokenDeCaract(char caract)
+int get_token(char *buffer)
 {
-    if(caract == ',')
+    static int i = 0;
+    int caracter = getchar();
+    if(!isspace(caracter))
     {
-        return SEP;
-    }
-    else if (caract != ',' && caract >= 34 && caract <= 254)
-    {
-        return CAD;
-    }
-    else if(caract == EOF)
-    {
-        return FDT;
+        if(caracter == ',')
+        {
+            if(i!=0)
+            {
+                buffer[i] = '\0';
+                i = 0;
+                ungetc(caracter, stdin);
+                return CAD;
+            }
+            else
+            {
+                return SEP;
+            }
+        }
+        else if(caracter == EOF)
+        {
+            if(i!=0)
+            {
+                buffer[i] = '\0';
+                i = 0;
+                ungetc(caracter, stdin);
+                return CAD;
+            }
+            else
+            {
+                return FDT;
+            }
+        }
+        else
+        {
+            buffer[i] = caracter;
+            i++;
+            return OTRO;
+        }
     }
     else
     {
-        return -1;
-    }
-}
-
-void get_token(){
-    char caracter;
-    char vec[300];
-    int i=0;
-    int token;
-    int cantCadena = 0;
-    caracter = getchar();
-    while(caracter != EOF)
-    {
-        vec[i] = caracter;
-        i++;
-        caracter = getchar();
-    }
-    vec[i] = caracter;
-    for(int j=0 ; j<=i ; j++)
-    {
-        token = tokenDeCaract(vec[j]);
-        switch(token)
+        if(i!=0)
         {
-            default:
-            if(cantCadena)
-            {
-                printf("\n Cadena: ");
-                for(int k=cantCadena ; k>0 ; k--)
-                {
-                    printf("%c", vec[j-k]);
-                }
-                cantCadena = 0;
-            }
-            break;
-
-            case FDT:
-            if(cantCadena)
-            {
-                printf("\n Cadena: ");
-                for(int k=cantCadena ; k>0 ; k--)
-                {
-                    printf("%c", vec[j-k]);
-                }
-                cantCadena = 0;
-            }
-            printf("\n Fin de Texto");
-            break;
-
-            case SEP:
-            if(cantCadena)
-            {
-                printf("\n Cadena: ");
-                for(int k=cantCadena ; k>0 ; k--)
-                {
-                    printf("%c", vec[j-k]);
-                }
-                cantCadena = 0;
-            }
-            printf("\n Separador: ,");
-            break;
-
-            case CAD:
-            cantCadena++;
-            break;
+            buffer[i] = '\0';
+            i = 0;
+            return CAD;
         }
+        return OTRO;
     }
 }

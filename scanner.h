@@ -1,7 +1,8 @@
-#ifndef SCANNER_H_INCLUDED
-#define SCANNER_H_INCLUDED
+#ifndef SCANNER_H2_INCLUDED
+#define SCANNER_H2_INCLUDED
 
-int tokenDeCaract(char caract);
-void get_token();
+enum{FDT,SEP,CAD,OTRO};
 
-#endif // SCANNER_H_INCLUDED
+int get_token(char *buffer);
+
+#endif // SCANNER_H2_INCLUDED
